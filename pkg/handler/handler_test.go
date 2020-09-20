@@ -34,7 +34,9 @@ func TestHandler(t *testing.T) {
 	defer cancel()
 	a := assertions.New(t)
 	h, err := InitHandler(ctx, "./test.yml")
-	a.So(err, should.BeNil)
+	if !a.So(err, should.BeNil) {
+		t.Fatal()
+	}
 
 	address := "127.0.0.1:8000"
 

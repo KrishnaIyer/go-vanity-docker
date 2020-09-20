@@ -77,7 +77,7 @@ Nothing to see here folks!
 </body>
 </html>`))
 
-var httpEndpointRegex = regexp.MustCompile(`^https?://[a-z-.=?/0-9]+$`)
+var httpEndpointRegex = regexp.MustCompile(`^https?:\/\/[A-Za-z-.=\?\/0-9]+$`)
 
 // InitHandler initializes the global handler.
 // This is non-idiomatic but is optimised for google cloud functions.
