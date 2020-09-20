@@ -33,7 +33,7 @@ func TestHandler(t *testing.T) {
 	ctx, cancel := context.WithCancel(baseCtx)
 	defer cancel()
 	a := assertions.New(t)
-	h, err := InitHandler(ctx, "./test.yml")
+	h, err := Init(ctx, "./test.yml")
 	if !a.So(err, should.BeNil) {
 		t.Fatal()
 	}

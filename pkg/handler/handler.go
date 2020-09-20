@@ -79,13 +79,13 @@ Nothing to see here folks!
 
 var httpEndpointRegex = regexp.MustCompile(`^https?:\/\/[A-Za-z-.=\?\/0-9]+$`)
 
-// InitHandler initializes the global handler.
+// Init initializes the global handler.
 // This is non-idiomatic but is optimised for google cloud functions.
 // The config is parsed from a yaml file that is;
 // - Fetched from an external source (an HTTP endpoint).
 // - Present locally on the filesystem
 // If both options are provided, the local file is ignored.
-func InitHandler(ctx context.Context, vanityConfig string) (*Handler, error) {
+func Init(ctx context.Context, vanityConfig string) (*Handler, error) {
 	var handler Handler
 	var client = &http.Client{
 		Timeout: 10 * time.Second,
