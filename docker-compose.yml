@@ -1,0 +1,9 @@
+version: '3.7'
+services:
+  vanity:
+    image: krishnaiyer/go-vanity-docker:v0.0.1
+    command: go-vanity -c /vanity/config.yml
+    volumes:
+      - ./vanity.yml:/vanity/config.yml
+    ports:
+      - "8080:8080"

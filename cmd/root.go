@@ -16,7 +16,6 @@ package cmd
 
 import (
 	"context"
-	"fmt"
 	"log"
 	"net/http"
 	"regexp"
@@ -67,8 +66,10 @@ var (
 			if err != nil {
 				log.Fatal(err)
 			}
-			if ret := addressRegex.FindString(config.HTTPAddress); ret == "" {
-				log.Fatal(fmt.Errorf("Invalid http server address: %s", config.HTTPAddress))
+			var address string
+			if address = addressRegex.FindString(config.HTTPAddress); address == "" {
+				log.Printf("Invalid server address %s using 0.0.0.0:8080", config.HTTPAddress)
+				address = "0.0.0.0:8080"
 			}
 
 			r := mux.NewRouter()
@@ -77,13 +78,13 @@ var (
 			r.Methods("GET")
 			s := &http.Server{
 				Handler:      r,
-				Addr:         config.HTTPAddress,
+				Addr:         address,
 				WriteTimeout: 5 * time.Second,
 				ReadTimeout:  5 * time.Second,
 				IdleTimeout:  5 * time.Second,
 			}
 
-			log.Printf("Serving HTTP requests on %s ", config.HTTPAddress)
+			log.Printf("Serving HTTP requests on %s ", address)
 			select {
 			case <-ctx.Done():
 				s.Close()
