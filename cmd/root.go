@@ -16,8 +16,10 @@ package cmd
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"net/http"
+	"regexp"
 	"time"
 
 	"github.com/spf13/pflag"
@@ -41,6 +43,8 @@ var (
 
 	manager *Manager
 
+	addressRegex = regexp.MustCompile(`^([a-z-.0-9]+)(:[0-9]+)?$`)
+
 	// Root is the root of the commands.
 	Root = &cobra.Command{
 		Use:           "go-vanity",
@@ -62,6 +66,9 @@ var (
 			h, err := handler.Init(ctx, config.VanityConfig)
 			if err != nil {
 				log.Fatal(err)
+			}
+			if ret := addressRegex.FindString(config.HTTPAddress); ret == "" {
+				log.Fatal(fmt.Errorf("Invalid http server address: %s", config.HTTPAddress))
 			}
 
 			r := mux.NewRouter()
