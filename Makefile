@@ -29,5 +29,10 @@ build.docker:
 	main.go
 	docker build -t ${GO_VANITY_DOCKER_IMAGE}:${GO_VANITY_DOCKER_VERSION} .
 
+push:
+	docker push ${GO_VANITY_DOCKER_IMAGE}:${GO_VANITY_DOCKER_VERSION}
+	docker tag ${GO_VANITY_DOCKER_IMAGE}:${GO_VANITY_DOCKER_VERSION} ${GO_VANITY_DOCKER_IMAGE}:latest
+	docker push ${GO_VANITY_DOCKER_IMAGE}:latest
+
 clean:
 	rm -rf dist
