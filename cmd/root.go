@@ -68,7 +68,7 @@ var (
 			}
 			var address string
 			if address = addressRegex.FindString(config.HTTPAddress); address == "" {
-				log.Printf("Invalid server address %s using 0.0.0.0:8080", config.HTTPAddress)
+				log.Printf("Invalid or empty server address %s using 0.0.0.0:8080", config.HTTPAddress)
 				address = "0.0.0.0:8080"
 			}
 
