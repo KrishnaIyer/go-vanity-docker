@@ -21,11 +21,10 @@ import (
 	"regexp"
 	"time"
 
-	"github.com/spf13/pflag"
-
 	"github.com/gorilla/mux"
 	"github.com/krishnaiyer/go-vanity-docker/pkg/handler"
 	"github.com/spf13/cobra"
+	"github.com/spf13/pflag"
 )
 
 // Config represents the configuration
@@ -62,6 +61,7 @@ var (
 			baseCtx := context.Background()
 			ctx, cancel := context.WithCancel(baseCtx)
 			defer cancel()
+
 			h, err := handler.Init(ctx, config.VanityConfig)
 			if err != nil {
 				log.Fatal(err)
@@ -75,6 +75,7 @@ var (
 			r := mux.NewRouter()
 			r.HandleFunc("/", h.HandleIndex)
 			r.HandleFunc("/{project}", h.HandleImport)
+			r.HandleFunc("/{project}/{path}", h.HandleImport)
 			r.Methods("GET")
 			s := &http.Server{
 				Handler:      r,

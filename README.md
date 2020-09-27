@@ -5,11 +5,11 @@ It additionally supports
 - call metrics per url (and totals)
 - rate-limiting
 
-The code is based off the [GCP example repository](https://github.com/GoogleCloudPlatform/govanityurls).
+The code is based on the [GCP example repository](https://github.com/GoogleCloudPlatform/govanityurls).
 
 ## Motivation
 
-This is an alternative to my [Go Vanity Cloud Functions](https://github.com/KrishnaIyer/go-vanity-cloud-function) intended for self-hosting.
+This is an alternative to my [Go Vanity Cloud Functions](https://github.com/KrishnaIyer/go-vanity-cloud-function) intended for self-hosting. This provides more control over custom features like metrics and rate limiting.
 
 ## Deployment
 
