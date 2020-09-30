@@ -15,7 +15,7 @@
 package main
 
 import (
-	"github.com/krishnaiyer/go-vanity-docker/cmd"
+	"go.krishnaiyer.dev/go-vanity-docker/cmd"
 )
 
 func main() {

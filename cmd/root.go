@@ -22,9 +22,9 @@ import (
 	"time"
 
 	"github.com/gorilla/mux"
-	"github.com/krishnaiyer/go-vanity-docker/pkg/handler"
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
+	"go.krishnaiyer.dev/go-vanity-docker/pkg/handler"
 )
 
 // Config represents the configuration
