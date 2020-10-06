@@ -9,5 +9,6 @@ require (
 	github.com/spf13/cobra v1.0.0
 	github.com/spf13/pflag v1.0.5
 	github.com/spf13/viper v1.7.1
+	go.krishnaiyer.dev/godry v0.0.0-20200930191327-576ac6792b1b
 	gopkg.in/yaml.v2 v2.3.0
 )

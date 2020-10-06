@@ -16,7 +16,7 @@ package cmd
 
 import (
 	"context"
-	"log"
+	"fmt"
 	"net/http"
 	"regexp"
 	"time"
@@ -25,6 +25,7 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
 	"go.krishnaiyer.dev/go-vanity-docker/pkg/handler"
+	"go.krishnaiyer.dev/godry/log"
 )
 
 // Config represents the configuration
@@ -32,6 +33,7 @@ type Config struct {
 	VanityConfig string `name:"vanity-config" short:"c" description:"remote URL or local path to vanity configuration as yml"`
 	HTTPAddress  string `name:"http-address" short:"a" description:"host:port for the http server"`
 	Debug        bool   `name:"debug" short:"d" description:"print detailed logs for errors"`
+	NoOfSubpaths int    `name:"no-of-subpaths" short:"n" description:"number of subpaths"`
 }
 
 var (
@@ -40,6 +42,8 @@ var (
 	config = new(Config)
 
 	manager *Manager
+
+	logger = log.New()
 
 	addressRegex = regexp.MustCompile(`^([a-z-.0-9]+)(:[0-9]+)?$`)
 
@@ -64,18 +68,17 @@ var (
 
 			h, err := handler.Init(ctx, config.VanityConfig)
 			if err != nil {
-				log.Fatal(err)
+				logger.Fatal(err.Error())
 			}
 			var address string
 			if address = addressRegex.FindString(config.HTTPAddress); address == "" {
-				log.Printf("Invalid or empty server address %s using 0.0.0.0:8080", config.HTTPAddress)
+				logger.Info(fmt.Sprintf("Invalid or empty server address %s using 0.0.0.0:8080", config.HTTPAddress))
 				address = "0.0.0.0:8080"
 			}
 
 			r := mux.NewRouter()
 			r.HandleFunc("/", h.HandleIndex)
-			r.HandleFunc("/{project}", h.HandleImport)
-			r.HandleFunc("/{project}/{path}", h.HandleImport)
+			addPath(r, h.HandleImport, config.NoOfSubpaths)
 			r.Methods("GET")
 			s := &http.Server{
 				Handler:      r,
@@ -85,26 +88,36 @@ var (
 				IdleTimeout:  5 * time.Second,
 			}
 
-			log.Printf("Serving HTTP requests on %s ", address)
+			logger.Info(fmt.Sprintf("Serving HTTP requests on %s ", address))
 			select {
 			case <-ctx.Done():
 				s.Close()
 			default:
-				log.Fatal(s.ListenAndServe())
+				logger.Fatal(s.ListenAndServe().Error())
 			}
 		},
 	}
 )
 
+func addPath(r *mux.Router, f func(http.ResponseWriter, *http.Request), n int) {
+	path := "/{project}"
+	r.HandleFunc(path, f)
+	for i := 0; i < n; i++ {
+		path = fmt.Sprintf("%s/{path%d}", path, i)
+		r.HandleFunc(path, f)
+		logger.Info(fmt.Sprintf("Adding Path %s", path))
+	}
+}
+
 // Execute ...
 func Execute() {
 	if err := Root.Execute(); err != nil {
-		log.Fatal(err.Error())
+		logger.Fatal(err.Error())
 	}
 }
 
 func init() {
-	manager = New("config")
+	manager = New("config", "VANITY")
 	manager.InitFlags(*config)
 	Root.PersistentFlags().AddFlagSet(manager.Flags())
 	Root.AddCommand(Version(Root))

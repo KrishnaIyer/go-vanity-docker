@@ -17,6 +17,7 @@ package cmd
 import (
 	"fmt"
 	"reflect"
+	"strings"
 
 	"github.com/mitchellh/mapstructure"
 	"github.com/spf13/pflag"
@@ -36,11 +37,12 @@ type Manager struct {
 }
 
 // New returns a new initialized manager with the given config.
-func New(name string) *Manager {
+func New(name, prefix string) *Manager {
 	viper := viper.New()
 	viper.AllowEmptyEnv(true)
 	viper.AutomaticEnv()
 	viper.SetConfigName(name)
+	viper.SetEnvPrefix(strings.ToUpper(prefix))
 
 	return &Manager{
 		name:  name,
@@ -114,6 +116,8 @@ func (mgr *Manager) parseStructToFlags(prefix string, strT reflect.Type) {
 			mgr.flags.StringP(name, short, "", desc)
 		case reflect.Bool:
 			mgr.flags.BoolP(name, short, false, desc)
+		case reflect.Int:
+			mgr.flags.IntP(name, short, 0, desc)
 		case reflect.Struct:
 			// This allows for recursion
 			mgr.parseStructToFlags(name, field.Type)
