@@ -40,9 +40,13 @@ type Manager struct {
 func New(name, prefix string) *Manager {
 	viper := viper.New()
 	viper.AllowEmptyEnv(true)
-	viper.AutomaticEnv()
 	viper.SetConfigName(name)
-	viper.SetEnvPrefix(strings.ToUpper(prefix))
+	viper.SetEnvPrefix(prefix)
+	// This is the magic line
+	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_", "-", "_"))
+	viper.AllowEmptyEnv(true)
+	viper.SetConfigType("yml")
+	viper.AutomaticEnv()
 
 	return &Manager{
 		name:  name,
@@ -54,19 +58,20 @@ func New(name, prefix string) *Manager {
 // InitFlags initializes the flagset with the provided config.
 func (mgr *Manager) InitFlags(cfg interface{}) error {
 	rootStruct := reflect.TypeOf(cfg)
-
 	if rootStruct.Kind() != reflect.Struct {
 		panic("configuration is not a struct")
 	}
-
 	mgr.parseStructToFlags("", rootStruct)
-
 	err := mgr.viper.BindPFlags(mgr.flags)
 	if err != nil {
 		panic(err)
 	}
-
 	return nil
+}
+
+// ReadInConfig wraps viper.ReadInConfig()
+func (mgr *Manager) ReadInConfig() error {
+	return mgr.viper.ReadInConfig()
 }
 
 // Flags returns pflag.FlagSet.
@@ -83,7 +88,6 @@ func (mgr *Manager) Unmarshal(config interface{}) error {
 	if err != nil {
 		return err
 	}
-
 	decoder.Decode(mgr.viper.AllSettings())
 	return nil
 }
