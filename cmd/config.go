@@ -69,6 +69,11 @@ func (mgr *Manager) InitFlags(cfg interface{}) error {
 	return nil
 }
 
+// AllSettings wraps viper.AllSettings()
+func (mgr *Manager) AllSettings() map[string]interface{} {
+	return mgr.viper.AllSettings()
+}
+
 // ReadInConfig wraps viper.ReadInConfig()
 func (mgr *Manager) ReadInConfig() error {
 	return mgr.viper.ReadInConfig()
@@ -84,12 +89,14 @@ func (mgr *Manager) Unmarshal(config interface{}) error {
 	decoder, err := mapstructure.NewDecoder(&mapstructure.DecoderConfig{
 		TagName: "name",
 		Result:  config,
+		// These are an important settings, check documentation.
+		WeaklyTypedInput: true,
+		ZeroFields:       true,
 	})
 	if err != nil {
 		return err
 	}
-	decoder.Decode(mgr.viper.AllSettings())
-	return nil
+	return decoder.Decode(mgr.viper.AllSettings())
 }
 
 // Viper returns viper.

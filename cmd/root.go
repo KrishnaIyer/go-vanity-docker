@@ -33,7 +33,7 @@ type Config struct {
 	Redirects    string `name:"redirects" short:"r" description:"remote URL or local path to vanity redirects as yml"`
 	HTTPAddress  string `name:"http-address" short:"a" description:"host:port for the http server"`
 	Debug        bool   `name:"debug" short:"d" description:"print detailed logs for errors"`
-	NoOfSubpaths int    `name:"no-of-subpaths" short:"n" description:"number of subpaths"`
+	NoOfSubPaths int    `name:"no-of-subpaths" short:"n" description:"number of subpaths"`
 }
 
 var (
@@ -76,7 +76,7 @@ var (
 
 			r := mux.NewRouter()
 			r.HandleFunc("/", h.HandleIndex)
-			addPath(r, h.HandleImport, config.NoOfSubpaths)
+			addPath(r, h.HandleImport, config.NoOfSubPaths)
 			r.Methods("GET")
 			s := &http.Server{
 				Handler:      r,
@@ -118,5 +118,6 @@ func init() {
 	manager = New("config", "go-vanity")
 	manager.InitFlags(*config)
 	Root.PersistentFlags().AddFlagSet(manager.Flags())
-	Root.AddCommand(Version(Root))
+	Root.AddCommand(manager.VersionCommand(Root))
+	Root.AddCommand(manager.ConfigCommand(Root))
 }
