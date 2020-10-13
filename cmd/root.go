@@ -26,6 +26,7 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
 	"go.krishnaiyer.dev/go-vanity-docker/pkg/handler"
+	cfg "go.krishnaiyer.dev/godry/config"
 )
 
 // Config represents the configuration
@@ -41,7 +42,7 @@ var (
 
 	config = new(Config)
 
-	manager *Manager
+	manager *cfg.Manager
 
 	addressRegex = regexp.MustCompile(`^([a-z-.0-9]+)(:[0-9]+)?$`)
 
@@ -115,7 +116,7 @@ func Execute() {
 }
 
 func init() {
-	manager = New("config", "go-vanity")
+	manager = cfg.New("config", "go-vanity")
 	manager.InitFlags(*config)
 	Root.PersistentFlags().AddFlagSet(manager.Flags())
 	Root.AddCommand(manager.VersionCommand(Root))
